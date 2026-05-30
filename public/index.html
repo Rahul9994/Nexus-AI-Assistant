@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>N.E.X.U.S. — Neural EXpert Unified System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Cursor elements -->
+  <div id="cursor-outer"></div>
+  <div id="cursor-inner"></div>
+  <canvas id="cursor-canvas"></canvas>
+
+  <!-- Background layers -->
+  <canvas id="bg-canvas"></canvas>
+  <div class="aurora"></div>
+  <div class="scanlines"></div>
+
+  <!-- HUD corner decorations -->
+  <div class="hud-corner hud-tl">
+    <svg viewBox="0 0 80 80" fill="none"><path d="M0 80 L0 0 L80 0" stroke="currentColor" stroke-width="1.5"/><path d="M0 60 L0 0 L60 0" stroke="currentColor" stroke-width="0.5" opacity="0.4"/><circle cx="0" cy="0" r="3" fill="currentColor"/><line x1="0" y1="20" x2="20" y2="20" stroke="currentColor" stroke-width="0.5" opacity="0.6"/><line x1="20" y1="0" x2="20" y2="20" stroke="currentColor" stroke-width="0.5" opacity="0.6"/></svg>
+  </div>
+  <div class="hud-corner hud-tr">
+    <svg viewBox="0 0 80 80" fill="none"><path d="M80 80 L80 0 L0 0" stroke="currentColor" stroke-width="1.5"/><path d="M80 60 L80 0 L20 0" stroke="currentColor" stroke-width="0.5" opacity="0.4"/><circle cx="80" cy="0" r="3" fill="currentColor"/><line x1="80" y1="20" x2="60" y2="20" stroke="currentColor" stroke-width="0.5" opacity="0.6"/><line x1="60" y1="0" x2="60" y2="20" stroke="currentColor" stroke-width="0.5" opacity="0.6"/></svg>
+  </div>
+  <div class="hud-corner hud-bl">
+    <svg viewBox="0 0 80 80" fill="none"><path d="M0 0 L0 80 L80 80" stroke="currentColor" stroke-width="1.5"/><path d="M0 20 L0 80 L60 80" stroke="currentColor" stroke-width="0.5" opacity="0.4"/><circle cx="0" cy="80" r="3" fill="currentColor"/><line x1="0" y1="60" x2="20" y2="60" stroke="currentColor" stroke-width="0.5" opacity="0.6"/><line x1="20" y1="60" x2="20" y2="80" stroke="currentColor" stroke-width="0.5" opacity="0.6"/></svg>
+  </div>
+  <div class="hud-corner hud-br">
+    <svg viewBox="0 0 80 80" fill="none"><path d="M80 0 L80 80 L0 80" stroke="currentColor" stroke-width="1.5"/><path d="M80 20 L80 80 L20 80" stroke="currentColor" stroke-width="0.5" opacity="0.4"/><circle cx="80" cy="80" r="3" fill="currentColor"/><line x1="80" y1="60" x2="60" y2="60" stroke="currentColor" stroke-width="0.5" opacity="0.6"/><line x1="60" y1="60" x2="60" y2="80" stroke="currentColor" stroke-width="0.5" opacity="0.6"/></svg>
+  </div>
+
+  <!-- Boot screen overlay -->
+  <div id="boot-screen">
+    <div class="boot-logo">
+      <div class="boot-hex"></div>
+      <div class="boot-title">N.E.X.U.S.</div>
+      <div class="boot-subtitle">NEURAL EXPERT UNIFIED SYSTEM</div>
+      <div class="boot-bar"><div class="boot-fill"></div></div>
+      <div id="boot-log"></div>
+    </div>
+  </div>
+
+  <!-- Main Application -->
+  <div id="app" class="hidden">
+
+    <!-- Header -->
+    <header id="header">
+      <div class="header-left">
+        <div class="logo-mark">[</div>
+        <span class="logo-text">N.E.X.U.S.</span>
+        <div class="logo-mark">]</div>
+        <span class="logo-sub">v2.0</span>
+      </div>
+      <div class="header-center">
+        <div class="hud-line" id="hud-typing-bar">
+          <span class="hud-label">READY</span>
+          <span id="interim-text" class="interim"></span>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="status-group">
+          <span class="status-dot" id="api-dot"></span>
+          <span class="status-label" id="api-label">API</span>
+        </div>
+        <div class="status-group">
+          <span class="status-dot active"></span>
+          <span class="status-label">ONLINE</span>
+        </div>
+        <div id="clock-display">
+          <div id="clock-time">00:00:00</div>
+          <div id="clock-date">---</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Grid -->
+    <main id="main-layout">
+
+      <!-- ═══ LEFT PANEL ═══ -->
+      <aside id="left-panel">
+
+        <div class="panel glass-panel" id="orb-panel">
+          <div class="panel-label">NEURAL CORE</div>
+          <div id="orb-wrapper">
+            <canvas id="orb-canvas" width="260" height="260"></canvas>
+            <div class="orb-rings">
+              <div class="ring ring-a"></div>
+              <div class="ring ring-b"></div>
+              <div class="ring ring-c"></div>
+            </div>
+            <div id="orb-state-label">IDLE</div>
+            <div id="orb-pulse-ring"></div>
+          </div>
+
+          <!-- Waveform -->
+          <div id="waveform-wrap">
+            <canvas id="waveform-canvas" width="240" height="48"></canvas>
+          </div>
+
+          <!-- Mic + Type buttons -->
+          <div id="control-row">
+            <button id="mic-btn" class="btn-primary" title="Hold to speak / Click to toggle">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="9" y1="22" x2="15" y2="22"/></svg>
+              <span id="mic-label">ACTIVATE</span>
+            </button>
+            <button id="clear-btn" class="btn-icon" title="Clear chat">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Skills Panel -->
+        <div class="panel glass-panel" id="skills-panel">
+          <div class="panel-label">QUICK SKILLS</div>
+          <div class="skills-grid">
+            <div class="skill-chip" data-cmd="open https://google.com">🌐 Browser</div>
+            <div class="skill-chip" data-cmd="system info">💻 System</div>
+            <div class="skill-chip" data-cmd="what time is it">🕐 Time</div>
+            <div class="skill-chip" data-cmd="search ">🔍 Search</div>
+            <div class="skill-chip" data-cmd="open youtube.com">▶ YouTube</div>
+            <div class="skill-chip" data-cmd="volume up">🔊 Volume</div>
+            <div class="skill-chip" data-cmd="screenshot">📸 Capture</div>
+            <div class="skill-chip" data-cmd="help">❓ Help</div>
+          </div>
+        </div>
+
+      </aside>
+
+      <!-- ═══ CENTER PANEL ═══ -->
+      <section id="center-panel">
+        <div class="panel glass-panel" id="chat-panel">
+          <div class="panel-label chat-label">
+            <span>CONVERSATION</span>
+            <span id="msg-count" class="msg-badge">0</span>
+          </div>
+
+          <div id="messages-container">
+            <div id="welcome-msg" class="welcome">
+              <div class="welcome-icon">⬡</div>
+              <div class="welcome-title">N.E.X.U.S. ONLINE</div>
+              <div class="welcome-sub">Speak or type a command · Ask anything · I control your system</div>
+              <div class="welcome-hints">
+                <span class="hint">Try: "open YouTube"</span>
+                <span class="hint">Try: "what's my CPU?"</span>
+                <span class="hint">Try: "search for AI news"</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Typing indicator -->
+          <div id="typing-indicator" class="hidden">
+            <div class="typing-avatar">N</div>
+            <div class="typing-dots">
+              <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            </div>
+            <span class="typing-text">Processing…</span>
+          </div>
+
+          <!-- Input bar -->
+          <div id="input-bar">
+            <div id="input-wrapper">
+              <input id="text-input" type="text" placeholder="Type a command or question…" autocomplete="off" spellcheck="false">
+              <div id="input-glow"></div>
+            </div>
+            <button id="send-btn" class="btn-send" title="Send">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ RIGHT PANEL ═══ -->
+      <aside id="right-panel">
+
+        <!-- System Status -->
+        <div class="panel glass-panel" id="sys-panel">
+          <div class="panel-label">SYSTEM STATUS</div>
+          <div id="sys-stats">
+            <div class="stat-row">
+              <span class="stat-key">OS</span>
+              <span class="stat-val" id="s-os">—</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-key">CPU</span>
+              <span class="stat-val" id="s-cpu">—</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-key">CORES</span>
+              <span class="stat-val" id="s-cores">—</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-key">RAM</span>
+              <span class="stat-val" id="s-ram">—</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-key">UPTIME</span>
+              <span class="stat-val" id="s-uptime">—</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-key">HOST</span>
+              <span class="stat-val" id="s-host">—</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-key">NET</span>
+              <span class="stat-val" id="s-net">—</span>
+            </div>
+          </div>
+          <div class="mem-bar-wrap">
+            <div class="mem-bar-label"><span>MEM USAGE</span><span id="mem-pct">0%</span></div>
+            <div class="mem-bar"><div class="mem-fill" id="mem-fill"></div></div>
+          </div>
+        </div>
+
+        <!-- Capabilities -->
+        <div class="panel glass-panel" id="cap-panel">
+          <div class="panel-label">CAPABILITIES</div>
+          <div class="cap-list">
+            <div class="cap-item"><span class="cap-dot"></span>Browser & URL control</div>
+            <div class="cap-item"><span class="cap-dot"></span>App launching</div>
+            <div class="cap-item"><span class="cap-dot"></span>Web search</div>
+            <div class="cap-item"><span class="cap-dot"></span>System info & stats</div>
+            <div class="cap-item"><span class="cap-dot"></span>Volume control</div>
+            <div class="cap-item"><span class="cap-dot"></span>Screenshots</div>
+            <div class="cap-item"><span class="cap-dot"></span>Voice recognition</div>
+            <div class="cap-item"><span class="cap-dot"></span>AI conversation</div>
+            <div class="cap-item"><span class="cap-dot"></span>Math & calculation</div>
+            <div class="cap-item"><span class="cap-dot"></span>Google Maps navigation</div>
+          </div>
+        </div>
+
+        <!-- Command Log -->
+        <div class="panel glass-panel" id="log-panel">
+          <div class="panel-label">COMMAND LOG</div>
+          <div id="cmd-log-list"></div>
+        </div>
+
+      </aside>
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="js/cursor.js"></script>
+  <script src="js/background.js"></script>
+  <script src="js/orb.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
